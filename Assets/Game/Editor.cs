@@ -8,6 +8,13 @@ using UnityEngine.UI;
 public class Editor : MonoBehaviour
 {
     private InputField editor;
+    public InputCell inputCell;
+    public InputCell[] inputCells = new InputCell[6];
+    public OutputCell outputCell;
+    public OutputCell[] outputCells = new OutputCell[6];
+    private int[] outputValue = new int[] { -1, -1, -1, -1, -1, -1 };
+    public TargetCell targetCell;
+    public TargetCell[] targetCells = new TargetCell[6];
     public Cell cell;
     public Cell[] cells = new Cell[6];
     private int pointerPosition = 0;
@@ -24,15 +31,35 @@ public class Editor : MonoBehaviour
         // editor = GetComponentInChildren<InputField>();
         editor = GameObject.Find("InputField").GetComponent<InputField>();
         // editor.interactable = false;
+        // Level Init
+        GameObject.Find("Title").GetComponent<Text>().text = level.name;
+        GameObject.Find("Rule").GetComponent<Text>().text = level.rule;
+        level.Method();
         for (var iter = 0; iter < 6; iter++)
         {
+            // MemoryCell
             cells[iter] = Instantiate<Cell>(cell, this.transform);
             var pos = cells[iter].GetComponent<RectTransform>().position;
             cells[iter].GetComponent<RectTransform>().position = new Vector3(pos.x + iter * 80, pos.y, 0);
-        }
 
-        // Level Init
-        level.Method();
+            // InputCell
+            inputCells[iter] = Instantiate<InputCell>(inputCell, this.transform);
+            var inputPos = inputCells[iter].GetComponent<RectTransform>().position;
+            inputCells[iter].GetComponent<RectTransform>().position = new Vector3(inputPos.x + iter * 80, inputPos.y, 0);
+            inputCells[iter].GetComponent<Text>().text = level.inputs[iter, 0].ToString();
+
+            // OutputCell
+            outputCells[iter] = Instantiate<OutputCell>(outputCell, this.transform);
+            var outputPos = outputCells[iter].GetComponent<RectTransform>().position;
+            outputCells[iter].GetComponent<RectTransform>().position = new Vector3(outputPos.x + iter * 80, outputPos.y, 0);
+            outputCells[iter].GetComponent<Text>().text = "-1";
+
+            // TargetCell
+            targetCells[iter] = Instantiate<TargetCell>(targetCell, this.transform);
+            var targetPos = targetCells[iter].GetComponent<RectTransform>().position;
+            targetCells[iter].GetComponent<RectTransform>().position = new Vector3(targetPos.x + iter * 80, targetPos.y, 0);
+            targetCells[iter].GetComponent<Text>().text = level.outputs[iter, 0].ToString();
+        }
     }
 
     void Update()
@@ -53,5 +80,10 @@ public class Editor : MonoBehaviour
     public void BrainfuckStop()
     {
         isRunning = false;
+    }
+
+    public void EmitLength()
+    {
+        GameObject.Find("InputSize").GetComponent<Text>().text = $"Size: {editor.text.Length}/100";
     }
 }
