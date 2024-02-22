@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 // using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Editor : MonoBehaviour
@@ -33,12 +34,17 @@ public class Editor : MonoBehaviour
     private float runTimer = 0;
     private bool levelComplete = false;
     public ILevel level;
+    private Controller controller;
+
     void Start()
     {
+        // Controler
+        controller = Controller.GetInstance();
         // Test Level
-        level = new LevelTest();
+        level = controller.level;
         // editor = GetComponentInChildren<InputField>();
         editor = GameObject.Find("InputField").GetComponent<InputField>();
+        editor.text = controller.levelString;
         // editor.interactable = false;
         // Level Init
         GameObject.Find("Title").GetComponent<Text>().text = level.name;
@@ -80,8 +86,11 @@ public class Editor : MonoBehaviour
         for (var iter = 0; iter < 6; iter++)
         {
             cells[iter].GetComponent<Text>().color = Color.white;
+            inputCells[pointerPosition].GetComponent<Text>().color = Color.white;
         }
         cells[pointerPosition].GetComponent<Text>().color = Color.yellow;
+        inputCells[pointerPosition].GetComponent<Text>().color = Color.yellow;
+
 
         editor.interactable = !isRunning;
 
@@ -95,6 +104,15 @@ public class Editor : MonoBehaviour
         // Checker
         GameObject.Find("Step").GetComponent<Button>().interactable = checker;
         GameObject.Find("Run").GetComponent<Button>().interactable = checker;
+
+        // Quit
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            // SaveGame
+            controller.resolutions[controller.levelIndex].resolutions[controller.levelInfoIndex] = editor.text;
+            controller.GameSave();
+            SceneManager.LoadScene(0);
+        }
     }
 
     public void PreviewNext()
@@ -195,7 +213,7 @@ public class Editor : MonoBehaviour
                 case ">": CellPositionMoveRight(); break;
                 case "[": LoopStart(); break;
                 case "]": LoopEnd(); break;
-                case ",": Input(); break;
+                case ",": InputCommand(); break;
                 case ".": Output(); break;
             }
             commandPosition += 1;
@@ -236,9 +254,15 @@ public class Editor : MonoBehaviour
                 GameObject.Find("TestPercent").GetComponent<Text>().text = $"{currentTest + 1}/100";
                 if (testPassed >= 99)
                 {
+                    BrainfuckStop();
                     levelComplete = true;
                     GameObject.Find("Clear").GetComponent<Text>().text = levelComplete ? "Clear!" : "";
-                    BrainfuckStop();
+                    if (!controller.resolutions[controller.levelIndex].clear)
+                    {
+                        controller.levelSequence += 1;
+                        controller.resolutions[controller.levelIndex].clear = true;
+                    }
+                    controller.GameSave();
                 }
             }
         }
@@ -362,7 +386,7 @@ public class Editor : MonoBehaviour
         }
     }
 
-    private void Input()
+    private void InputCommand()
     {
         cells[pointerPosition].value = (inputPos < 5) || (level.inputs[inputPos, testPassed] != -1) ?
         level.inputs[inputPos, testPassed] : cells[pointerPosition].value;

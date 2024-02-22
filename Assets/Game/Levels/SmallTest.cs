@@ -2,12 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class LevelTest : ILevel
+public class SmallTest : ILevel
 {
     public int[,] inputs { get; set; } = new int[6, 100];
     public int[,] outputs { get; set; } = new int[6, 100];
-    public string name { get; set; } = "Test Level";
-    public string rule { get; set; } = "Turn 1 to 0, Turn 0 to 1";
+    public string name { get; set; } = "Small Test";
+    public string rule { get; set; } = "Print every input number and plus one.";
     public string story { get; set; } = @"Hello,
 
 Welcome to the Brainfuck Company! We are a company make solutions with Brainfuck.
@@ -19,14 +19,13 @@ Today is your first day to become a part of our big family, and here are some ta
 Thank you for your assistance.
 
 John Smith";
-
     public void Method()
     {
         for (var iter = 0; iter < 100; iter++)
         {
             var rand = new Random(1145141 + iter);
-            inputs[0, iter] = rand.Next(0, 2);
-            outputs[0, iter] = inputs[0, iter] == 1 ? 0 : 1;
+            inputs[0, iter] = rand.Next(0, 22);
+            outputs[0, iter] = inputs[0, iter] + 1;
             for (var j = 1; j < 6; j++)
             {
                 inputs[j, iter] = -1;
@@ -34,4 +33,5 @@ John Smith";
             }
         }
     }
+
 }
