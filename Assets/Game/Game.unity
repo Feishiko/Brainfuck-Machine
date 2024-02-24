@@ -653,10 +653,10 @@ MonoBehaviour:
     . will print current
     cell to output
 
-    < will move to the left cell is there has
+    < will move to the left cell if there has
 
     > will move
-    to the right cell is there has
+    to the right cell if there has
 
     + will plus one in the current cell, if more
     than 255, the next + will be 0
