@@ -6,19 +6,19 @@ public class LevelTest : ILevel
 {
     public int[,] inputs { get; set; } = new int[6, 100];
     public int[,] outputs { get; set; } = new int[6, 100];
-    public string name { get; set; } = "Test Level";
+    public string name { get; set; } = "Binary";
     public string rule { get; set; } = "Turn 1 to 0, Turn 0 to 1";
-    public string story { get; set; } = @"Hello,
+    public string story { get; set; } = @"Hi,
 
-Welcome to the Brainfuck Company! We are a company make solutions with Brainfuck.
+Modern computer are based on binary, 1 means turn on, 0 means turn off.
 
-This newage language are very simple and neet, they are more stronger than Java C# or any other languages.
+That means we can do many operation with binary.
 
-Today is your first day to become a part of our big family, and here are some tasks you need to solve them, don't worry they are easy for you.
+Brainfuck can do the same thing!
 
-Thank you for your assistance.
+Black and white, day and night, Yin and Yang.
 
-John Smith";
+Lili Li";
 
     public void Method()
     {

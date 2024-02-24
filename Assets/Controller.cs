@@ -66,6 +66,14 @@ public class Controller
         File.WriteAllText(Application.persistentDataPath + "/save.json", SaveToString());
     }
 
+    public void GameSaveCode(string code)
+    {
+        Debug.Log("22");
+        resolutions[levelIndex].resolutions[levelInfoIndex] = code;
+        Debug.Log("33");
+        File.WriteAllText(Application.persistentDataPath + "/save.json", SaveToString());
+    }
+
     public void GameLoad()
     {
         if (File.Exists(Application.persistentDataPath + "/save.json"))

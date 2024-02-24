@@ -35,9 +35,19 @@ public class Editor : MonoBehaviour
     private bool levelComplete = false;
     public ILevel level;
     private Controller controller;
+    private GameObject helpPanel;
+    private bool error = false;
+    private GameObject errorMessage;
+    private double errorTimer = 61;
 
     void Start()
     {
+        helpPanel = GameObject.Find("HelpPanel");
+        errorMessage = GameObject.Find("Error");
+
+        // Close the help
+        CloseTheHelp();
+
         // Controler
         controller = Controller.GetInstance();
         // Test Level
@@ -53,26 +63,26 @@ public class Editor : MonoBehaviour
         for (var iter = 0; iter < 6; iter++)
         {
             // MemoryCell
-            cells[iter] = Instantiate<Cell>(cell, this.transform);
+            cells[iter] = Instantiate<Cell>(cell, GameObject.Find("InputField").transform);
             var pos = cells[iter].GetComponent<RectTransform>().position;
-            cells[iter].GetComponent<RectTransform>().position = new Vector3(pos.x + iter * 160, pos.y, 0);
+            cells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, pos.y, 0);
 
             // InputCell
-            inputCells[iter] = Instantiate<InputCell>(inputCell, this.transform);
+            inputCells[iter] = Instantiate<InputCell>(inputCell, GameObject.Find("InputField").transform);
             var inputPos = inputCells[iter].GetComponent<RectTransform>().position;
-            inputCells[iter].GetComponent<RectTransform>().position = new Vector3(inputPos.x + iter * 160, inputPos.y, 0);
+            inputCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, inputPos.y, 0);
             inputCells[iter].GetComponent<Text>().text = level.inputs[iter, 0].ToString();
 
             // OutputCell
-            outputCells[iter] = Instantiate<OutputCell>(outputCell, this.transform);
+            outputCells[iter] = Instantiate<OutputCell>(outputCell, GameObject.Find("InputField").transform);
             var outputPos = outputCells[iter].GetComponent<RectTransform>().position;
-            outputCells[iter].GetComponent<RectTransform>().position = new Vector3(outputPos.x + iter * 160, outputPos.y, 0);
+            outputCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, outputPos.y, 0);
             outputCells[iter].GetComponent<Text>().text = "-1";
 
             // TargetCell
-            targetCells[iter] = Instantiate<TargetCell>(targetCell, this.transform);
+            targetCells[iter] = Instantiate<TargetCell>(targetCell, GameObject.Find("InputField").transform);
             var targetPos = targetCells[iter].GetComponent<RectTransform>().position;
-            targetCells[iter].GetComponent<RectTransform>().position = new Vector3(targetPos.x + iter * 160, targetPos.y, 0);
+            targetCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, targetPos.y, 0);
             targetCells[iter].GetComponent<Text>().text = level.outputs[iter, 0].ToString();
         }
 
@@ -86,16 +96,20 @@ public class Editor : MonoBehaviour
         for (var iter = 0; iter < 6; iter++)
         {
             cells[iter].GetComponent<Text>().color = Color.white;
-            inputCells[pointerPosition].GetComponent<Text>().color = Color.white;
+            inputCells[iter].GetComponent<Text>().color = Color.white;
         }
         cells[pointerPosition].GetComponent<Text>().color = Color.yellow;
-        inputCells[pointerPosition].GetComponent<Text>().color = Color.yellow;
+        if (inputPos < 6)
+        {
+            inputCells[inputPos].GetComponent<Text>().color = Color.yellow;
+        }
 
 
         editor.interactable = !isRunning;
 
         runTimer += Time.deltaTime * 1000;
-        if (isActive && runTimer > 10)
+        errorTimer += Time.deltaTime * 50;
+        if (isActive && runTimer > 1)
         {
             ProgramRun();
             runTimer = 0;
@@ -109,10 +123,21 @@ public class Editor : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             // SaveGame
-            controller.resolutions[controller.levelIndex].resolutions[controller.levelInfoIndex] = editor.text;
+            Debug.Log("1");
+            Debug.Log("controller.levelIndex:" + controller.levelIndex);
+            Debug.Log("controller.levelInfoIndex:" + controller.levelInfoIndex);
+            Debug.Log("editor.text:" + editor.text);
+            Debug.Log("controller.resolutions[controller.levelIndex]" + controller.resolutions[controller.levelIndex]);
+            // Debug.Log("controller.resolutions[controller.levelIndex].resolutions[controller.levelInfoIndex]" + controller.resolutions[controller.levelIndex].resolutions[0]);
+            // controller.resolutions[controller.levelIndex].resolutions[controller.levelInfoIndex] = editor.text;
+            controller.GameSaveCode(editor.text);
             controller.GameSave();
             SceneManager.LoadScene(0);
         }
+
+        // Error
+        errorMessage.SetActive(error);
+        error = errorTimer < 60;
     }
 
     public void PreviewNext()
@@ -127,6 +152,14 @@ public class Editor : MonoBehaviour
             {
                 inputCells[iter].GetComponent<Text>().text = level.inputs[iter, currentTest].ToString();
                 targetCells[iter].GetComponent<Text>().text = level.outputs[iter, currentTest].ToString();
+                if (level.inputs[iter, currentTest] != -1)
+                {
+                    inputCells[iter].gameObject.SetActive(true);
+                }
+                if (level.outputs[iter, currentTest] != -1)
+                {
+                    targetCells[iter].gameObject.SetActive(true);
+                }
             }
         }
         GameObject.Find("TestPercent").GetComponent<Text>().text = $"{currentTest + 1}/100";
@@ -144,6 +177,14 @@ public class Editor : MonoBehaviour
             {
                 inputCells[iter].GetComponent<Text>().text = level.inputs[iter, currentTest].ToString();
                 targetCells[iter].GetComponent<Text>().text = level.outputs[iter, currentTest].ToString();
+                if (level.inputs[iter, currentTest] != -1)
+                {
+                    inputCells[iter].gameObject.SetActive(true);
+                }
+                if (level.outputs[iter, currentTest] != -1)
+                {
+                    targetCells[iter].gameObject.SetActive(true);
+                }
             }
         }
         GameObject.Find("TestPercent").GetComponent<Text>().text = $"{currentTest + 1}/100";
@@ -159,6 +200,14 @@ public class Editor : MonoBehaviour
             {
                 inputCells[iter].GetComponent<Text>().text = level.inputs[iter, currentTest].ToString();
                 targetCells[iter].GetComponent<Text>().text = level.outputs[iter, currentTest].ToString();
+                if (level.inputs[iter, currentTest] != -1)
+                {
+                    inputCells[iter].gameObject.SetActive(true);
+                }
+                if (level.outputs[iter, currentTest] != -1)
+                {
+                    targetCells[iter].gameObject.SetActive(true);
+                }
             }
             GameObject.Find("TestPercent").GetComponent<Text>().text = $"{currentTest + 1}/100";
         }
@@ -177,6 +226,14 @@ public class Editor : MonoBehaviour
             {
                 inputCells[iter].GetComponent<Text>().text = level.inputs[iter, currentTest].ToString();
                 targetCells[iter].GetComponent<Text>().text = level.outputs[iter, currentTest].ToString();
+                if (level.inputs[iter, currentTest] != -1)
+                {
+                    inputCells[iter].gameObject.SetActive(true);
+                }
+                if (level.outputs[iter, currentTest] != -1)
+                {
+                    targetCells[iter].gameObject.SetActive(true);
+                }
             }
             GameObject.Find("TestPercent").GetComponent<Text>().text = $"{currentTest + 1}/100";
         }
@@ -228,6 +285,7 @@ public class Editor : MonoBehaviour
                     checker = false;
                     isActive = false;
                     Debug.Log("Result illegal!");
+                    errorTimer = 0;
                 }
             }
             if (checker)
@@ -250,6 +308,14 @@ public class Editor : MonoBehaviour
                     outputCells[iter].gameObject.SetActive(false);
                     inputCells[iter].GetComponent<Text>().text = level.inputs[iter, currentTest].ToString();
                     targetCells[iter].GetComponent<Text>().text = level.outputs[iter, currentTest].ToString();
+                    if (level.inputs[iter, currentTest] != -1)
+                    {
+                        inputCells[iter].gameObject.SetActive(true);
+                    }
+                    if (level.outputs[iter, currentTest] != -1)
+                    {
+                        targetCells[iter].gameObject.SetActive(true);
+                    }
                 }
                 GameObject.Find("TestPercent").GetComponent<Text>().text = $"{currentTest + 1}/100";
                 if (testPassed >= 99)
@@ -262,7 +328,7 @@ public class Editor : MonoBehaviour
                         controller.levelSequence += 1;
                         controller.resolutions[controller.levelIndex].clear = true;
                     }
-                    controller.GameSave();
+                    controller.GameSaveCode(editor.text);
                 }
             }
         }
@@ -285,6 +351,7 @@ public class Editor : MonoBehaviour
         for (var iter = 0; iter < 6; iter++)
         {
             cells[iter].value = 0;
+            outputCells[iter].value = -1;
         }
     }
 
@@ -313,7 +380,7 @@ public class Editor : MonoBehaviour
         {
             checker = false;
         }
-        GameObject.Find("InputSize").GetComponent<Text>().text = $"Size: {editor.text.Length}/100";
+        GameObject.Find("InputSize").GetComponent<Text>().text = $"Size: {editor.text.Length}/50";
     }
 
     private void Plus()
@@ -388,14 +455,20 @@ public class Editor : MonoBehaviour
 
     private void InputCommand()
     {
-        cells[pointerPosition].value = (inputPos < 5) || (level.inputs[inputPos, testPassed] != -1) ?
-        level.inputs[inputPos, testPassed] : cells[pointerPosition].value;
-        inputPos += 1;
+        if (inputPos < 6)
+        {
+            if (level.inputs[inputPos, testPassed] != -1)
+            {
+                cells[pointerPosition].value = (inputPos < 5) || (level.inputs[inputPos, testPassed] != -1) ?
+                        level.inputs[inputPos, testPassed] : cells[pointerPosition].value;
+                inputPos += 1;
+            }
+        }
     }
 
     private void Output()
     {
-        if (outputPos < 5)
+        if (outputPos < 6)
         {
             outputValue[outputPos] = cells[pointerPosition].value;
             outputCells[outputPos].gameObject.SetActive(true);
@@ -403,5 +476,15 @@ public class Editor : MonoBehaviour
             Debug.Log(cells[pointerPosition].value.ToString());
             outputPos += 1;
         }
+    }
+
+    public void OpenTheHelp()
+    {
+        helpPanel.SetActive(true);
+    }
+
+    public void CloseTheHelp()
+    {
+        helpPanel.SetActive(false);
     }
 }

@@ -15,11 +15,26 @@ public class LevelSelector : MonoBehaviour
     public LevelInfoButton levelInfoButtonSelect;
     private Controller controller = Controller.GetInstance();
     private int levelCreated = 0;
+    private GameObject content;
     void Start()
     {
         controller.levelSelector = this;
         controller.GameLoad();
+        controller.GameSave();
+        controller.GameLoad();
         NewLevelCreate(new SmallTest(), 0);
+        NewLevelCreate(new SwapTest(), 1);
+        NewLevelCreate(new SimpleLoopTest(), 2);
+        NewLevelCreate(new LevelTest(), 3);
+        NewLevelCreate(new PlusTest(), 3);
+        NewLevelCreate(new Plus2Test(), 4);
+        NewLevelCreate(new TFTest(), 5);
+        NewLevelCreate(new TimesTest(), 6);
+        NewLevelCreate(new BiggerTest(), 7);
+        NewLevelCreate(new AbsTest(), 7);
+        NewLevelCreate(new BitTest(), 20);
+        content = GameObject.Find("Content");
+        content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, levelCreated*55);
 
         // Level Info Buttons
         var levelInfoPanel = GameObject.Find("LevelInfoPanel");
@@ -36,6 +51,7 @@ public class LevelSelector : MonoBehaviour
         {
             buttonSelect = controller.buttonSelect;
         }
+        controller.GameSave();
     }
 
     void Update()
@@ -100,6 +116,7 @@ public class LevelSelector : MonoBehaviour
                 button.resolution.resolutionTitles[0] = "New Solution";
                 // button.resolution.resolutionNumber += 1;
             }
+            controller.GameSave();
             for (var iter = 0; iter < 20; iter++)
             {
                 if (buttonLevels[iter] == null)
