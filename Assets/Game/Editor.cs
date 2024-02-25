@@ -39,6 +39,7 @@ public class Editor : MonoBehaviour
     private bool error = false;
     private GameObject errorMessage;
     private double errorTimer = 61;
+    private AudioSource victory;
 
     void Start()
     {
@@ -88,6 +89,23 @@ public class Editor : MonoBehaviour
 
         // Clear
         GameObject.Find("Clear").GetComponent<Text>().text = levelComplete ? "Clear!" : "";
+
+        Debug.Log(controller.levelIndex % 3);
+
+        // Music
+        if (controller.levelIndex % 3 == 0)
+        {
+            GameObject.Find("1").GetComponent<AudioSource>().Play();
+        }
+        else if (controller.levelIndex % 3 == 1)
+        {
+            GameObject.Find("2").GetComponent<AudioSource>().Play();
+        }
+        else if (controller.levelIndex % 3 == 2)
+        {
+            GameObject.Find("3").GetComponent<AudioSource>().Play();
+        }
+        victory = GameObject.Find("Victory").GetComponent<AudioSource>();
     }
 
     void Update()
@@ -329,6 +347,10 @@ public class Editor : MonoBehaviour
                         controller.resolutions[controller.levelIndex].clear = true;
                     }
                     controller.GameSaveCode(editor.text);
+                    GameObject.Find("1").GetComponent<AudioSource>().Stop();
+                    GameObject.Find("2").GetComponent<AudioSource>().Stop();
+                    GameObject.Find("3").GetComponent<AudioSource>().Stop();
+                    victory.Play();
                 }
             }
         }

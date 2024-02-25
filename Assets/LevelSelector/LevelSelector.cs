@@ -28,11 +28,20 @@ public class LevelSelector : MonoBehaviour
         NewLevelCreate(new LevelTest(), 3);
         NewLevelCreate(new PlusTest(), 3);
         NewLevelCreate(new Plus2Test(), 4);
-        NewLevelCreate(new TFTest(), 5);
-        NewLevelCreate(new TimesTest(), 6);
-        NewLevelCreate(new BiggerTest(), 7);
-        NewLevelCreate(new AbsTest(), 7);
-        NewLevelCreate(new BitTest(), 20);
+        NewLevelCreate(new AndAndAndGateTest(), 5);
+        NewLevelCreate(new TFTest(), 6);
+        NewLevelCreate(new TimesTest(), 7);
+        NewLevelCreate(new BiggerTest(), 8);
+        NewLevelCreate(new AbsTest(), 8);
+        NewLevelCreate(new BitTest(), 9);
+        if (buttonLevels[11] != null)
+        {
+            if (buttonLevels[11].resolution.clear)
+            {
+                NewLevelCreate(new EDTest(), 1);
+                buttonLevels[12].GetComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene("ED"));
+            }
+        }
         content = GameObject.Find("Content");
         content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, levelCreated*55);
 
@@ -87,6 +96,12 @@ public class LevelSelector : MonoBehaviour
         if (buttonSelect != null)
         {
             GameObject.Find("Story").GetComponent<Text>().text = buttonSelect.level.story;
+        }
+
+        // Quit
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
         }
     }
 
@@ -183,6 +198,10 @@ public class LevelSelector : MonoBehaviour
 
     public void ButtonSelect(ButtonLevel buttonLevel)
     {
+        for (var i = 0; i < 5; i++)
+        {
+            levelInfoButtons[i].gameObject.SetActive(false);
+        }
         buttonSelect = buttonLevel;
         buttonLevel.levelSelector = this;
     }
