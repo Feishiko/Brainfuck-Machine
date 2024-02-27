@@ -22,7 +22,7 @@ public class LevelInfoButton : MonoBehaviour
         {
             if (levelSelector.GetLevelInfoButtonSelect() == this)
             {
-                GetComponent<Image>().color = Color.yellow;
+                GetComponent<Image>().color = Color.blue;
             }
             else
             {

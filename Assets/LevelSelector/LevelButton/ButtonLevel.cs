@@ -20,7 +20,7 @@ public class ButtonLevel : MonoBehaviour
         {
             if (levelSelector.GetButtonSelect() == this)
             {
-                GetComponent<Image>().color = Color.yellow;
+                GetComponent<Image>().color = Color.blue;
             }
             else
             {

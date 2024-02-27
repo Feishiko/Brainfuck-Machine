@@ -41,6 +41,8 @@ public class Editor : MonoBehaviour
     private double errorTimer = 61;
     private AudioSource victory;
 
+    private int runningSpeed = 1;
+
     void Start()
     {
         helpPanel = GameObject.Find("HelpPanel");
@@ -66,24 +68,24 @@ public class Editor : MonoBehaviour
             // MemoryCell
             cells[iter] = Instantiate<Cell>(cell, GameObject.Find("InputField").transform);
             var pos = cells[iter].GetComponent<RectTransform>().position;
-            cells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, pos.y, 0);
+            cells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, pos.y - 30, 0);
 
             // InputCell
             inputCells[iter] = Instantiate<InputCell>(inputCell, GameObject.Find("InputField").transform);
             var inputPos = inputCells[iter].GetComponent<RectTransform>().position;
-            inputCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, inputPos.y, 0);
+            inputCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, inputPos.y - 30, 0);
             inputCells[iter].GetComponent<Text>().text = level.inputs[iter, 0].ToString();
 
             // OutputCell
             outputCells[iter] = Instantiate<OutputCell>(outputCell, GameObject.Find("InputField").transform);
             var outputPos = outputCells[iter].GetComponent<RectTransform>().position;
-            outputCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, outputPos.y, 0);
+            outputCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, outputPos.y - 25, 0);
             outputCells[iter].GetComponent<Text>().text = "-1";
 
             // TargetCell
             targetCells[iter] = Instantiate<TargetCell>(targetCell, GameObject.Find("InputField").transform);
             var targetPos = targetCells[iter].GetComponent<RectTransform>().position;
-            targetCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, targetPos.y, 0);
+            targetCells[iter].GetComponent<RectTransform>().position = new Vector3(90 + iter * 160, targetPos.y - 25, 0);
             targetCells[iter].GetComponent<Text>().text = level.outputs[iter, 0].ToString();
         }
 
@@ -125,11 +127,18 @@ public class Editor : MonoBehaviour
 
         editor.interactable = !isRunning;
 
-        runTimer += Time.deltaTime * 1000;
+        runTimer += Time.deltaTime * 10000;
         errorTimer += Time.deltaTime * 50;
         if (isActive && runTimer > 1)
         {
-            ProgramRun();
+            for (var i = 0; i < 1*runningSpeed; i++)
+            {
+                if (!isActive || levelComplete)
+                {
+                    break;
+                }
+                ProgramRun();
+            }
             runTimer = 0;
         }
 
@@ -508,5 +517,22 @@ public class Editor : MonoBehaviour
     public void CloseTheHelp()
     {
         helpPanel.SetActive(false);
+    }
+
+    public void GoBack()
+    {
+        controller.GameSaveCode(editor.text);
+        controller.GameSave();
+        SceneManager.LoadScene(0);
+    }
+
+    public void OriginSpeed()
+    {
+        runningSpeed = 1;
+    }
+
+    public void FasterSpeed()
+    {
+        runningSpeed = 30;
     }
 }
